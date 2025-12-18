@@ -1,0 +1,44 @@
+This program was made using the following selections in Builder
+
+Units: Metric
+Controllers: ECY-STAT-Z
+Equipment Type: Zone Unit
+
+Room Temperature: ECY-STAT Internal Sensor
+Sensor Setpoint Type: Single Setpoint
+Zone Damper: 0-10Vdc
+Reheat: Single Stage
+Reheat Output: On-Off
+Perimeter Heat: Single Stage
+Perimeter Output: On-Off
+Discharge Temperature: 10k Type 2
+Outdoor Temperature: None
+Duct Inlet: Analog Value Write from Remote
+Shedding: None
+
+--------------------------------------------------
+
+File Versions:
+
+Equipment:
+Distech/Terminal Units/Zone Unit SI (Preview)
+
+Master files:
+Distech/master/STAT/ECY_STAT_Z_SI_V2 (1.0.00000)
+Distech/master/LoadControl/LoadCtrl_ECY_SI_V7 (1.4.25161)
+Distech/master/LoadControl/LoadCtrl_Schedule (1.6.23318)
+Distech/master/Inputs/BLE Options/BLE_SingleSp_SI_V3 (1.0.00000)
+Distech/master/Inputs/BLE Options/BLE_SingleSetpoint_Out_SI_V3 (1.0.00000)
+Distech/master/Inputs/BLE Options/BLE_RoomOccupancy (1.0.00000)
+Distech/master/STAT/Screen/SI Snippets/ECYSTAT_SingleSP_SI_V3 (1.2.24060)
+Distech/master/STAT/Outputs/ZONE/Damper_0-10V_UO6 (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/DamperCtrl (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/1Reheat (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/Reheat1_DIG_DO4 (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/1PerimHeat (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/PerimHeat1_DIG_DO5 (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/HeatingCtrl_V4 (1.0.00000)
+Distech/master/STAT/Outputs/ZONE/MinHeatDampSp (1.0.00000)
+Distech/master/Inputs/SI Snippets/07DischTemp10KType2_SI (1.0.00000)
+Distech/master/Inputs/SI Snippets/09DuctInTemp_AV6_Get_SI_V4 (1.1.23317)
+Distech/master/STAT/Outputs/ZONE/HotAirDetection_SI (1.0.00000)
