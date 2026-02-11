@@ -1,0 +1,222 @@
+# Testing Procedures
+Confirm the air handling system is running before starting testing
+
+### Occupancy
+- **Occupancy status**
+
+[[MOTION]]
+
+- The {{p:OccupancyStatus}} (MSV 15) present value is determined by {{p:OccupancyCmd}} (MSV 1), the motion sensor input and the spase sensor override button.
+- Confirm that {{p:MotionSensor}} hardware input is Off, indicating that motion is not detected
+ - Set {{p:OccupancyCmd}} (MSV 1) to Unoccupied and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Unoccupied
+	- {{p:RoomOccupancy}} (BV 12) is equal to Unoccupied
+ - Generate motion in the room or override the {{p:MotionSensor}} hardware input to On, and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+	- {{p:RoomOccupancy}} (BV 12) is equal to Occupied
+ - Confirm that there is no motion in the room or override {{p:MotionSensor}} hardware input to Off,  wait for a delay greater than {{p:HoldTime}} (AV 54) / 3 and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Unoccupied
+	- {{p:RoomOccupancy}} (BV 12) is equal to Unoccupied
+ - While {{p:OccupancyStatus}} (MSV 15) is Unoccupied and {{p:RoomOccupancy}} (MSV 12) is Unoccupied, set {{p:OccupancyCmd}} (MSV 1) to Occupied and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Standby
+	- {{p:RoomOccupancy}} (BV 12) is equal to Unoccupied
+ - Generate motion in the room or override {{p:MotionSensor}} hardware input to On, and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+	- {{p:RoomOccupancy}} (BV 12) is equal to Occupied
+ - Confirm that there is no motion in the room or override {{p:MotionSensor}} hardware input to Off,  wait for a delay greater than {{p:HoldTime}} (AV 54) and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Standby
+	- {{p:RoomOccupancy}} (BV 12) is equal to Unoccupied
+ - Make sure to set {{p:OccupancyCmd}} (MSV 1) and {{p:MotionSensor}} hardware input back to Auto at the end of this test
+
+[[!MOTION]]
+
+- The {{p:OccupancyStatus}} (MSV 15) present value is determined by {{p:OccupancyCmd}} (MSV 1) and the spase sensor override button
+ - Set {{p:OccupancyCmd}} (MSV 1) to Unoccupied and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Unoccupied
+	- {{p:RoomOccupancy}} (BV 12) is equal to Unoccupied
+ - Set {{p:OccupancyCmd}} (MSV 1) to Occupied and confirm that;
+	- {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+	- {{p:RoomOccupancy}} (BV 12) is equal to Occupied
+ - Make sure to set {{p:OccupancyCmd}} (MSV 1) back to Auto at the end of this test
+
+[[true]]
+
+### HVAC Mode & TerminaLoad
+[[!WINDOW | WINDOW_RA]]
+- The {{p:HVACModeStatus}} (MSV 14) and {{p:TerminalLoad}} (AV 44) are calculated based on {{p:HVACModeCmd}} (MSV 2), PID_Cool (PID 1) and PID_Heat (PID 2)
+[[WINDOW | WINDOW_RA]]
+- The {{p:HVACModeStatus}} (MSV 14) and {{p:TerminalLoad}} (AV 44) are calculated based on {{p:HVACModeCmd}} (MSV 2), PID_Cool (PID 1), PID_Heat (PID 2) and the {{p:WindowContact}} hardware input
+
+[[true]]
+
+- **Cooling Mode**
+ - Confirm that {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+[[WINDOW | WINDOW_RA]]
+ - Confirm that the {{p:WindowContact}} hardware input is equal to Close
+[[true]]
+ - Set the {{p:HVACModeCmd}} (MSV 2) to Auto
+ - Override the {{p:EffectSpaceTemp}} (AV 13) above the {{p:ActCoolSP}} (AV 36) to simulate a cooling load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to Cool
+	- The {{p:TerminalLoad}} (AV 44) is greather than 0% and is increasing towards 100%
+	- NB The transition between heating and cooling mode can take up to 2 minutes, {{p:ChgOverDelay}} (AV 46)
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value between the {{p:ActCoolSP}} (AV 36) and {{p:ActHeatSP}} (AV 37) to simulate a lack of either cooling or heating load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to it's last state (Cool)
+	- The {{p:TerminalLoad}} (AV 44) is equal to 0%
+ - Make sure to set {{p:HVACModeCmd}} (MSV 2) and {{p:EffectSpaceTemp}} (AV 13) back to Auto at the end of this test
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+- **Heating Mode**
+ - Confirm that {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+[[WINDOW | WINDOW_RA]]
+	- Confirm that the {{p:WindowContact}} hardware input is equal to Close
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+ - Override the {{p:EffectSpaceTemp}} (AV 13) below the {{p:ActHeatSP}} (AV 37) to simulate a heating load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to Heat
+	- The {{p:TerminalLoad}} (AV 44) is lower than 0% and is decreasing towards -100%
+	- NB The transition between cooling and heating mode can take up to 2 minutes, {{p:ChgOverDelay}} (AV 46)
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value between the {{p:ActCoolSP}} (AV 36) and {{p:ActHeatSP}} (AV 37) to simulate a lack of either cooling or heating load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to it's last state (Heat)
+	- The {{p:TerminalLoad}} (AV 44) is equal to 0%
+ - Make sure to set {{p:HVACModeCmd}} (MSV 2) and {{p:EffectSpaceTemp}} (AV 13) back to Auto at the end of this test
+
+[[(WINDOW | WINDOW_RA)]]
+- **Window Open**
+ - Open the window or override the {{p:WindowContact}} hardware input to Open and confirm that;
+	- The {{p:HVACModeStatus}} is equal to Off
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value below 44°F and confirm that;
+	- The {{p:HVACModeStatus}} is equal to Heat
+	- The {{p:TerminalLoad}} (AV 44) is increasing towards 100%
+
+[[true]]
+- **HVAC Mode Override**
+[[WINDOW | WINDOW_RA]]
+ - Close the window or override {{p:WindowContact}} hardware input to Close
+[[true]]
+ - Release the override on {{p:EffectSpaceTemp}} (AV 13)
+ - Set {{p:HVACModeCmd}} (MSV 2) to a value other than Auto and confirm that;
+	- {{p:HVACModeStatus}} (MSV 14) is equal to {{p:HVACModeCmd}} (MSV 2)
+	- The {{p:TerminalLoad}} (AV 44) is greater or equal to 0% if {{p:HVACModeStatus}} (MS 14) is either Cool, NightPurge or PreCool
+	- The {{p:TerminalLoad}} (AV 44) is lower or equal to 0% if {{p:HVACModeStatus}} (MS 14) is either Heat, MrngWrmup
+	- The {{p:TerminalLoad}} (AV 44) is equal to 0% if {{p:HVACModeStatus}} (MS 14) is equal to Off
+
+ - Make sure to set {{p:HVACModeCmd}} (MSV 2) and {{p:EffectSpaceTemp}} (AV 13) back to Auto at the end of this test
+
+
+[[true]]
+
+### Cooling
+- **Full Cooling**
+ - Set {{p:OccupancyCmd}} (MSV 1) to Occupied [[MOTION]] and make sure that there is motion in the room [[true]] and confirm that;
+	- The {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+
+[[!DUCTIN_NONE]]
+	- The duct inlet temperature is suitable for cooling the space;[[(DUCTIN_NV_GET || DUCTIN_NV_READ)]] override {{p:DuctInTemp}} (AV 6) to 55°F to achieve this [[(DUCTIN_10K2 || DUCTIN_10K3)]] override {{p:DuctInTemp}} Hardware Input to 55°F to achieve this[[true]]
+
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value above the {{p:ActCoolSP}} (AV 36) to simulate a cooling load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to Cool
+	- The {{p:TerminalLoad}} (AV 44) is greater than 0%
+	- The zone Actuator Command modulates its position between max and min position to maintain {{p:EffectSpaceTemp}} (AV 13) at {{p:ActCoolSP}} (AV 36)
+
+[[REHEAT_1]]
+    - The heating coil stage Reheat1 is disabled
+
+[[PERIM_1]]
+    - The perimeter heating stage PerimHeat1 is disabled
+
+[[true]]
+- **Cooling Satisfied**
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value between the {{p:ActCoolSP}} (AV 36) and {{p:ActHeatSP}} (AV 37) to simulate a lack of either cooling or heating load and confirm that;
+	- The zone Actuator Command modulates its position to MinDampSP (AV 26)
+
+[[REHEAT_1]]
+    - The heating coil stage Reheat1 is disabled
+
+[[PERIM_1]]
+    - The perimeter heating stage PerimHeat1 is disabled
+
+[[true]]
+ - Make sure to release the override on {{p:EffectSpaceTemp}} (AV 13) at the end of this test
+
+[[(DUCTIN_NV_GET || DUCTIN_NV_READ)]]
+ - Make sure to release the override on {{p:DuctInTemp}} (AV 6) at the end of this test
+ 
+[[(DUCTIN_10K2 || DUCTIN_10K3)]]
+- Make sure to release the override on {{p:DuctInTemp}} Hardware Inut at the end of this test
+
+
+### Heating
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+### Heating
+- **Full Heating**
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+ - Set {{p:OccupancyCmd}} (MSV 1) to Occupied [[MOTION]], make sure that there is motion in the room and confirm that;
+	- The {{p:OccupancyStatus}} (MSV 15) is equal to Occupied
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value below the {{p:ActHeatSP}} (AV 37) to simulate a heating load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to Heat
+	- The {{p:TerminalLoad}} (AV 44) is lower than 0%
+
+[[!DUCTIN_NONE]]
+	- The duct inlet temperature is not suitable for heating the space;[[(DUCTIN_NV_GET || DUCTIN_NV_READ)]] override {{p:DuctInTemp}} (AV 6) to 55°F to achieve this [[(DUCTIN_10K2 || DUCTIN_10K3)]] override {{p:DuctInTemp}} Hardware Inut to 55°F to achieve this[[true]]
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+    - The zone Actuator Command modulates its position to {{p:MinHeatDampSP}} (AV 28)
+
+[[REHEAT_1]]
+    - The heating coil Reheat1 is enabled
+
+[[!DUCTIN_NONE]]
+- **Hot air detection**
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value between the {{p:ActCoolSP}} (AV 36) and {{p:ActHeatSP}} (AV 37) to simulate a lack of either cooling or heating load and confirm that;
+   - The zone Actuator Command modulates its position to {{p:MinHeatDampSP}} (AV 28)
+
+[[(DUCTIN_NV_GET || DUCTIN_NV_READ)]]
+ - Overrive {{p:DuctInTemp}} (AV 6) to 85°F to simulate duct inlet temperature suitable for heating the space
+
+[[(DUCTIN_10K2 || DUCTIN_10K3)]]
+ - Overrive {{p:DuctInTemp}} Hardware Inut to 85°F to simulate duct inlet temperature suitable for heating the space
+
+[[!DUCTIN_NONE]]
+  - Override the {{p:EffectSpaceTemp}} (AV 13) to a value below the {{p:ActHeatSP}} (AV 37) to simulate a heating load and confirm that;
+	- The {{p:HVACModeStatus}} (MSV 14) is equal to Heat
+	- The {{p:TerminalLoad}} (AV 44) is lower than 0%
+    - The zone Actuator Command modulates its position between max and min position to maintain {{p:EffectSpaceTemp}} (AV 13) at {{p:ActCoolSP}} (AV 36)
+	
+[[PERIM_1]]
+- **Perimeter Heat**
+   - The Perimeter Heat can change its staging based on a user defined variable {{p:HeatPriority}} (MSV 13),    - DuctHeater: from 0% to 50% and Perimeter Heat from 50% to 100%    - PerimeterHeat: from 0% to 50% and Duct Heater from 50% to 100%    - Simultaneous: Duct Heater and Perimeter Heater from 0% to 100%
+   - By default the {{p:HeatPriority}} (MSV 13) present value = DuctHeater, confirm that;
+    - The {{p:TerminalLoad}} (AV 44) present value decrease towards -100%
+
+[[PERIM_1]]
+    - The perimeter heat stage PerimHeat1 is enabled in sequence according to the {{p:TerminalLoad}} (AV 44) increase
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+- **Heating Satisfied**
+ - Override the {{p:EffectSpaceTemp}} (AV 13) to a value between the {{p:ActCoolSP}} (AV 36) and {{p:ActHeatSP}} (AV 37) to simulate a lack of either cooling or heating load and confirm that;
+
+[[REHEAT_1]]
+    - The heating coil stage Reheat1 is disabled
+
+[[PERIM_1]]
+    - The perimeter heat stage PerimHeat1 is disabled
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+    - The zone Actuator Command modulates its position to {{p:MinHeatDampSP}} (AV 28)
+
+[[REHEAT_1 | PERIM_1 | !DUCTIN_NONE]]
+ - Make sure to release the override on {{p:EffectSpaceTemp}} (AV 13) at the end of this test
+
+[[((DUCTIN_NV_GET || DUCTIN_NV_READ)) & (REHEAT_1 | PERIM_NONE | DUCTIN_NONE)]]
+ - Make sure to release the override on {{p:DuctInTemp}} (AV 6) at the end of this test
+ 
+[[((DUCTIN_10K2 || DUCTIN_10K3)) & (REHEAT_1 | PERIM_NONE | DUCTIN_NONE)]]
+- Make sure to release the override on {{p:DuctInTemp}} Hardware Inut at the end of this test
+
+[[true]]
+
+**DISCLAIMER :**
+
+The code provided is intended to provide general usage guidelines. Distech Controls Inc recommends fully testing this code prior to deploying to an operational system. Distech Controls Inc does not in any way, shape, or form take responsibility for the use or misuse of this code. Furthermore Distech Controls Inc does not guarantee the correctness of the provided code nor that the provided code will perform as described. Distech Controls Inc does not guarantee the completeness, comprehensiveness or the correctness of this code in relation to specific applications. Distech Controls Inc does not assume any liability for damage resulting from the use of this code. This includes, but is not limited to, the cost of repairs, replacement and project handover delay fines or any additional costs which may be incurred with the use of the provided code.
